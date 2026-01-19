@@ -1,52 +1,46 @@
-# LangGraph Restaurant Finder Agent
+# A2UI Restaurant finder and table reservation agent sample (LangGraph)
 
-This directory contains a sample implementation of the Restaurant Finder agent using [LangGraph](https://github.com/langchain-ai/langgraph) and `a2ui`.
+This sample uses [LangGraph](https://github.com/langchain-ai/langgraph) along with the A2A protocol to create a simple "Restaurant finder and table reservation" agent that is hosted as an A2A server.
 
 ## Prerequisites
 
-- Python 3.13+
-- A Google Gemini API Key
+- Python 3.9 or higher
+- [UV](https://docs.astral.sh/uv/)
+- Access to an LLM and API Key (Google Gemini is used by default)
 
-## Setup
+## Running the Sample
 
-1.  **Install Dependencies**:
+1. Navigate to the samples directory:
+
     ```bash
-    # You may need to install the local a2ui package first if not available in PyPI
-    pip install -e ../../../../a2a_agents/python/a2ui_extension
-
-    # Install other dependencies
-    pip install -r <(sed -n '/dependencies = \[/,/\]/p' pyproject.toml | sed '1d;$d' | tr -d '" ,' | sed 's/^//')
-    # OR using uv
-    # uv run .
+    cd samples/agent/langgraph/restaurant_finder
     ```
 
-2.  **Environment Variables**:
-    Create a `.env` file in this directory (or rename `.env.example` -> `.env`) and add your API key:
-    ```env
-    GEMINI_API_KEY=your_api_key_here
+2. Create an environment file with your API key:
+
+    ```bash
+    cp .env.example .env
+    # Edit .env with your actual API key (do not commit .env)
     ```
 
-## Running the Server
+3. Run the agent server:
 
-Run the agent server:
-
-```bash
-python __main__.py
-```
-
-The server will start on `http://localhost:10002`.
-
-## Using with A2UI Client
-
-Detailed instructions for running the client are in the root `README.md` or `samples/client/lit/shell`.
-Generally:
-1.  Navigate to `samples/client/lit/shell`.
-2.  `npm run dev`.
-3.  Open the client in the browser.
-4.  Interact with the Restaurant Agent.
+    ```bash
+    uv run .
+    ```
 
 ## Implementation Details
 
 -   `agent.py`: Defines the LangGraph agent, state, and tools.
 -   `agent_executor.py`: Adapts the LangGraph agent to the A2A server interface.
--   `tools.py`: Contains the `search_restaurants` tool logic.
+-   `a2ui_examples.py`: Contains few-shot examples for A2UI generation.
+
+## Disclaimer
+
+Important: The sample code provided is for demonstration purposes and illustrates the mechanics of A2UI and the Agent-to-Agent (A2A) protocol. When building production applications, it is critical to treat any agent operating outside of your direct control as a potentially untrusted entity.
+
+All operational data received from an external agent—including its AgentCard, messages, artifacts, and task statuses—should be handled as untrusted input. For example, a malicious agent could provide crafted data in its fields (e.g., name, skills.description) that, if used without sanitization to construct prompts for a Large Language Model (LLM), could expose your application to prompt injection attacks.
+
+Similarly, any UI definition or data stream received must be treated as untrusted. Malicious agents could attempt to spoof legitimate interfaces to deceive users (phishing), inject malicious scripts via property values (XSS), or generate excessive layout complexity to degrade client performance (DoS). If your application supports optional embedded content (such as iframes or web views), additional care must be taken to prevent exposure to malicious external sites.
+
+Developer Responsibility: Failure to properly validate data and strictly sandbox rendered content can introduce severe vulnerabilities. Developers are responsible for implementing appropriate security measures—such as input sanitization, Content Security Policies (CSP), strict isolation for optional embedded content, and secure credential handling—to protect their systems and users.
